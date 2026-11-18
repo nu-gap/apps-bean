@@ -246,6 +246,22 @@ const OSType kMyAppCreatorCode = 'bEAN';
 }
 
 // ******************* Window Nib Methods ********************
+#ifdef GNUSTEP
+- (void)makeWindowControllers
+{
+    // init has already loaded the nib and connected the document's outlets.
+    // Use that window rather than loading a second copy of the nib.
+    if ([[self windowControllers] count] == 0)
+    {
+        NSWindowController *controller = [[NSWindowController alloc] initWithWindow:docWindow];
+        [self addWindowController:controller];
+        [self windowControllerDidLoadNib:controller];
+        RELEASE(controller);
+    }
+}
+
+#endif
+
 - (NSString *)windowNibName
 {
 	//	overriding the nib file name makes MyDocument the nib's owner
@@ -1443,42 +1459,34 @@ NSString *universalTypeForFile(NSString *filename)
 	
 	//	get left margin from defaults in preferences
 	float leftMargin = 0.0;
-#ifndef GNUSTEP
 	leftMargin = [defaults boolForKey:@"prefIsMetric"] 
 				? [[defaults valueForKey:@"prefDefaultLeftMargin"] floatValue] * 28.35 
 				: [[defaults valueForKey:@"prefDefaultLeftMargin"] floatValue] * 72.0;
-#endif
 
 	if (leftMargin) { [printInfo setLeftMargin:leftMargin]; }
 	else { [printInfo setLeftMargin:0.0]; }
 	
 	//	get right margin from defaults in preferences
 	float rightMargin = 0.0;
-#ifndef GNUSTEP
 	rightMargin = [defaults boolForKey:@"prefIsMetric"] 
 				? [[defaults valueForKey:@"prefDefaultRightMargin"] floatValue] * 28.35 
 				: [[defaults valueForKey:@"prefDefaultRightMargin"] floatValue] * 72.0;
-#endif
-	if (leftMargin) { [printInfo setRightMargin:rightMargin]; }
+	if (rightMargin) { [printInfo setRightMargin:rightMargin]; }
 	else { [printInfo setRightMargin:0.0]; }
 
 	//	get top margin from defaults in preferences
 	float topMargin = 0.0;
-#ifndef GNUSTEP
 	topMargin = [defaults boolForKey:@"prefIsMetric"] 
 				? [[defaults valueForKey:@"prefDefaultTopMargin"] floatValue] * 28.35 
 				: [[defaults valueForKey:@"prefDefaultTopMargin"] floatValue] * 72.0;
-#endif
 	if (topMargin) { [printInfo setTopMargin:topMargin]; }
 	else { [printInfo setTopMargin:0.0]; }
 	
 	//	get bottom margin from defaults in preferences
 	float bottomMargin = 0.0;
-#ifndef GNUSTEP
 	bottomMargin = [defaults boolForKey:@"prefIsMetric"] 
 				? [[defaults valueForKey:@"prefDefaultBottomMargin"] floatValue] * 28.35 
 				: [[defaults valueForKey:@"prefDefaultBottomMargin"] floatValue] * 72.0;
-#endif
 	if (bottomMargin) { [printInfo setBottomMargin:bottomMargin]; }
 	else { [printInfo setBottomMargin:0.0]; }
 	
@@ -4648,9 +4656,7 @@ void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first, NSStr
 	}
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	//printing of header and footers is always turned on, but pageView returns the header and footer strings only if user preferences say so
-#ifndef GNUSTEP
 	[defaults setValue:[NSNumber numberWithBool:YES] forKey:NSPrintHeaderAndFooter];
-#endif
 	//	print to PDF (if menu action sends proper tag)
 	if ([sender tag]==100)
 	{

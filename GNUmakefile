@@ -24,7 +24,8 @@ Bean_LOCALIZED_RESOURCE_FILES = MainMenu.nib MyDocument.nib MarginSheet.nib \
     ServicesMenu.strings Credits.rtf
 Bean_MAIN_MODEL_FILE = MainMenu.nib
 Bean_APPLICATION_ICON = icn-beanapp.icns
-Bean_PLIST = BeanInfo.plist
+# BeanInfo.plist links to the shared Info.plist; GNUstep Make discovers and
+# merges it automatically, including the document types needed by File > New.
 
 include $(GNUSTEP_MAKEFILES)/application.make
 
